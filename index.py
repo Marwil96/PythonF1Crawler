@@ -1,4 +1,5 @@
 from wikitables import import_tables
+import wikipedia
 import json
 print("Hello, world!")
 
@@ -8,7 +9,7 @@ drivers = []
 def show_todo():
    for row in allDriversTable[1].rows:
     drivers.append(( {
-      'name':'{Driver Name}'.format(**row),
+      'name':'{Driver Name}'.format(**row).replace(' ~', '').replace(' ^','').replace(' *', ''),
       'nationality': '{Nationality}'.format(**row),
       'seasons_completed': '{Seasons Competed}'.format(**row),
       'drivers_championships':"{Drivers' Championships}".format(**row),
@@ -24,14 +25,45 @@ def show_todo():
 a = show_todo()
 
 for driver in drivers:
-  print('{name}'.format(**driver))
-  name = '{name}'.format(**driver)
-  driverDetails = import_tables('Alex Albon')
-  for detailsRow in driverDetails[0].rows:
-    try:
-      print('{Team}'.format(**detailsRow))
-    except:
-      pass
+  # driverData = wikipedia.page(wikipedia.search('{name}'.format(**driver))[0])
+  print(driver)
+  try:
+    # driverData = wikipedia.page(wikipedia.search('{name}'.format(**driver))[0])
+    driverData = wikipedia.WikipediaPage('{name}'.format(**driver))
+    print(driverData.images[0], '{name}'.format(**driver) )
+    driverDetails = import_tables('{name}'.format(**driver))
+    driver['portrait_image'] = driverData.images[0]
+    driverSeason = []
+    for detailsRow in driverDetails[0].rows:
+      if '{Series}'.format(**detailsRow) == 'Formula One':
+        print('{Team}'.format(**detailsRow))
+        driverSeason.append(({
+          'season':'{Season}'.format(**detailsRow),
+          'team':'{Team}'.format(**detailsRow),
+          'races':'{Races}'.format(**detailsRow),
+          'wins':'{Wins}'.format(**detailsRow),
+          'poles':'{Poles}'.format(**detailsRow),
+          'fastest_laps':'{Flaps}'.format(**detailsRow),
+          'podiums':'{Podiums}'.format(**detailsRow),
+          'points':'{Points}'.format(**detailsRow),
+          'position':'{Position}'.format(**detailsRow),
+
+          }))
+
+    driver['drive'] = driverData.images[0]
+    driver['driver_seasons'] = driverSeason
+
+  except:
+      pass # doing nothing on exceptio
+
+  # print('{name}'.format(**driver))
+  # name = '{name}'.format(**driver)
+  # driverDetails = import_tables(``)
+  # for detailsRow in driverDetails[0].rows:
+  #   try:
+  #     print('{Team}'.format(**detailsRow))
+  #   except:
+  #     pass
 
 # print(drivers)
 
