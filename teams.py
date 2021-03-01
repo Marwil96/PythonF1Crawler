@@ -1,5 +1,6 @@
 
 from wikitables import import_tables
+import wptools
 import wikipedia
 import json
 import requests
@@ -51,7 +52,10 @@ for row in allTeamsTable[1].rows:
 for team in teams:
   try:
     # driverData = wikipedia.page(wikipedia.search('{name}'.format(**driver))[0])
-    teamData = wikipedia.WikipediaPage('{name}'.format(**team))
+    # teamData = wikipedia.WikipediaPage('{name}'.format(**team))
+    teamData = wptools.page('{name}'.format(**team)).get_parse()
+    infobox = teamData.data['infobox']
+
     print(teamData)
 
   except:
